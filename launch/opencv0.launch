@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find simple_camera_publisher)/launch/camera_publisher.launch" > 
+        <!-- <param name="source" type="string" value="/dev/v4l/by-id/..." /> -->
+    </include>
+
+    <node pkg="opencv_intro" type="opencv0_node" name="opencv0_node" output="screen" />
+</launch>
