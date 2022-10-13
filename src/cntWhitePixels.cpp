@@ -23,8 +23,7 @@ class OpenCV0
     int thresh_;
 };
 
-
-OpenCV0::OpenCV0() : nh_{"~"}, it_{nh_}
+OpenCV0::OpenCV0() : it_{nh_}
 {
     image_sub_ = it_.subscribe("/cam_pub/image_raw", 1, &OpenCV0::imageCb, this); // cam_pub pubs 
     thresh_ = 140;
@@ -34,7 +33,6 @@ OpenCV0::~OpenCV0()
 {
     cv::destroyWindow(CVWIN_PREVIEW);
 }
-
 
 /**
  * Called once every time a image is published on the topic this node
@@ -56,14 +54,16 @@ void OpenCV0::imageCb(const sensor_msgs::ImageConstPtr& msg)
 
     // Convert the source to grayscale
     cv::Mat image_gray;
+    cv::Mat gray2;
     cv::cvtColor(cv_ptr->image, image_gray, CV_BGR2GRAY);
-
-    cv::imshow("Gray Image", image_gray); // Show the grayscale image
-
+    cv::resize(image_gray, gray2, cv::Size(image_gray.cols*0.5, image_gray.rows*0.5), 0, 0, cv::INTER_LINEAR);
+    //cv::resize(image_gray, gray2, cv::Size(300,200), cv::INTER_LINEAR);
+    cv::imshow("Gray Image", gray2); // Show the grayscale image
+    
     constexpr int max_BINARY_value = 255;
     constexpr int thresh_type = 0; // Normal
     cv::Mat image_thresh; // for B/W image
-    cv::threshold(image_gray, image_thresh, thresh_, max_BINARY_value, thresh_type);
+    cv::threshold(gray2, image_thresh, thresh_, max_BINARY_value, thresh_type);
 
     float white_amount = whiteAmount(image_thresh); // get the ratio of white pixels
     ROS_INFO_STREAM("white/all pixel ratio: " << white_amount);
@@ -79,7 +79,6 @@ void OpenCV0::imageCb(const sensor_msgs::ImageConstPtr& msg)
     cv::waitKey(20); // sleeps for 20 milisec to update GUI window
 }
 
-
 /**
  * Count White Pixels: Return the ratio of white pixels
  * full white: 1.0         full black: 0.0
@@ -94,7 +93,7 @@ float OpenCV0::whiteAmount(const cv::Mat& image)
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "opencv0");
+    ros::init(argc, argv, "opencv1");
     OpenCV0 sd{};
     ros::spin();
     return 0;

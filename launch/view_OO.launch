@@ -3,5 +3,5 @@
         <!-- <param name="source" type="string" value="/dev/v4l/by-id/..." /> -->
     </include>
 
-    <node pkg="opencv_intro" type="opencv0_node" name="opencv0_node" output="screen" />
+    <node pkg="cvros0cpp" type="view_OO" name="view_OO" output="screen" />
 </launch>
